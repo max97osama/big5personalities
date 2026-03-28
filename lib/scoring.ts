@@ -1,5 +1,5 @@
-import { questions, Trait, traitInfo } from "./questions";
-
+import { questions, Trait } from "./questions";
+import { traitInfo } from "@/lib/traits";
 export interface TraitScore {
 	  trait: Trait;
 	    score: number;      // raw score out of 50

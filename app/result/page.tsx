@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { traitInfo, Trait } from "@/lib/questions";
+import { Trait } from "@/lib/questions";
+import { traitInfo } from "@/lib/traits";
 import type { PersonalityResult } from "@/lib/scoring";
 
 export default function ResultPage() {
@@ -114,4 +115,3 @@ export default function ResultPage() {
       </div>
     </main>
   );
-}
