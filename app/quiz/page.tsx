@@ -22,6 +22,14 @@ export default function QuizPage() {
   const selected = answers[q.id];
   const isLast = current === total - 1;
 
+  const traitColor: Record<string, string> = {
+    O: "#1a8fb5", C: "#1a6bbf", E: "#0e9b8a", A: "#0e8a7a", N: "#2e6da4"
+  };
+  const traitName: Record<string, string> = {
+    O: "Openness", C: "Conscientiousness",
+    E: "Extraversion", A: "Agreeableness", N: "Neuroticism"
+  };
+
   function selectAnswer(val: number) {
     setAnswers((prev) => ({ ...prev, [q.id]: val }));
   }
@@ -48,6 +56,8 @@ export default function QuizPage() {
       if (data.success) {
         sessionStorage.setItem("quizResult", JSON.stringify(data.result));
         router.push("/result");
+      } else {
+        alert("Something went wrong. Please try again.");
       }
     } catch {
       alert("Something went wrong. Please try again.");
@@ -56,71 +66,58 @@ export default function QuizPage() {
     }
   }
 
-  const traitColor: Record<string, string> = {
-    O: "#8b5cf6", C: "#3b82f6", E: "#f59e0b", A: "#10b981", N: "#ef4444"
-  };
-  const traitName: Record<string, string> = {
-    O: "Openness", C: "Conscientiousness",
-    E: "Extraversion", A: "Agreeableness", N: "Neuroticism"
-  };
-
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-10"
-          style={{ background: "linear-gradient(135deg, #eef2ff 0%, #f0fdfa 100%)" }}>
-      <div className="w-full max-w-xl">
+    <main className="page-wrapper" style={{ justifyContent: "flex-start", paddingTop: 32 }}>
+      <div style={{ width: "100%", maxWidth: 560 }}>
 
-        <div className="mb-6">
-          <div className="flex justify-between text-sm mb-2" style={{ color: "#64748b" }}>
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#5b8db8", marginBottom: 8 }}>
             <span>Question {current + 1} of {total}</span>
             <span>{progress}% complete</span>
           </div>
           <div className="trait-bar">
-            <div className="trait-bar-fill"
-                 style={{ width: `${progress}%`, background: "#4f46e5" }} />
+            <div className="trait-bar-fill" style={{ width: `${progress}%`, background: `linear-gradient(90deg, #1a7abf, #0e9b8a)` }} />
           </div>
         </div>
 
         <div className="card question-card" key={q.id}>
-          <span className="text-xs font-bold px-3 py-1 rounded-full text-white mb-4 inline-block"
-                style={{ background: traitColor[q.trait] }}>
+
+          <span style={{
+            fontSize: 11, fontWeight: 700, padding: "4px 12px",
+            borderRadius: 20, background: traitColor[q.trait],
+            color: "white", marginBottom: 16, display: "inline-block"
+          }}>
             {traitName[q.trait]}
           </span>
 
-          <h2 className="text-xl font-semibold mb-8"
-              style={{ color: "#1e293b", lineHeight: "1.5" }}>
+          <h2 style={{ fontSize: 18, fontWeight: 600, color: "#0f2942", marginBottom: 24, lineHeight: 1.5 }}>
             {q.en}
           </h2>
 
-          <div className="flex flex-col gap-3">
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {answerOptions.en.map((opt) => (
               <button key={opt.value}
-                className={`option-btn ${selected === opt.value ? "selected" : ""}`}
+                className={`option-btn${selected === opt.value ? " selected" : ""}`}
                 onClick={() => selectAnswer(opt.value)}>
-                <span className="inline-block w-6 h-6 rounded-full border-2 mr-3 text-center text-xs leading-5"
-                      style={{
-                        borderColor: selected === opt.value ? "#4f46e5" : "#cbd5e1",
-                        background:  selected === opt.value ? "#4f46e5" : "white",
-                        color:       selected === opt.value ? "white" : "#64748b",
-                      }}>
-                  {opt.value}
-                </span>
+                <span className={`option-circle${selected === opt.value ? " checked" : ""}`} />
                 {opt.label}
               </button>
             ))}
           </div>
 
-          <div className="flex gap-3 mt-8">
+          <div style={{ display: "flex", gap: 10, marginTop: 24 }}>
             {current > 0 && (
-              <button className="btn-secondary flex-1" onClick={goBack}>← Back</button>
+              <button className="btn-secondary" onClick={goBack} style={{ width: "auto", padding: "12px 20px" }}>
+                ← Back
+              </button>
             )}
-            <button className="btn-primary flex-1" onClick={goNext}
-              disabled={!selected || submitting}>
+            <button className="btn-primary" onClick={goNext} disabled={!selected || submitting}>
               {submitting ? "Submitting..." : isLast ? "See My Results 🎉" : "Next →"}
             </button>
           </div>
         </div>
 
-        <p className="text-center text-xs mt-4" style={{ color: "#94a3b8" }}>
+        <p style={{ textAlign: "center", fontSize: 12, color: "#8ab4d4", marginTop: 12 }}>
           {Object.keys(answers).length} of {total} questions answered
         </p>
       </div>
