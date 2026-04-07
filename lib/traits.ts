@@ -90,7 +90,7 @@ export const traitInfo: Record<Trait, {
     },
     skills: {
       en: ["Deep empathy", "Self-awareness", "Artistic sensitivity", "Intuition", "Reflection"],
-      ar: ["التعاطف العميق", "الوعي الذاتي", "الحساسية الفنية", "الحدس", "الت省察"],
+      ar: ["التعاطف العميق", "الوعي الذاتي", "الحساسية الفنية", "الحدس", "التامل"],
     },
     jobs: {
       en: ["Writer", "Therapist", "Artist", "Researcher", "Poet", "Musician"],
@@ -127,7 +127,7 @@ export const combinedTraits: Record<string, {
     },
   },
   "O+N": {
-    title: { en: "The Introspective Artist", ar: "الفنان المتأمل" },
+    title: { en: "The Introspective Artist", ar: "الفنان المتامل" },
     summary: {
       en: "You feel and create deeply. Your emotional sensitivity fuels extraordinary artistic and intellectual expression. You turn inner turmoil into beautiful and meaningful work.",
       ar: "تشعر وتبدع بعمق. تغذي حساسيتك العاطفية تعبيرا فنيا وفكريا استثنائيا. تحول الاضطراب الداخلي الى عمل جميل وذي معنى.",
@@ -141,7 +141,7 @@ export const combinedTraits: Record<string, {
     },
   },
   "C+A": {
-    title: { en: "The Reliable Caregiver", ar: "المعتنى به الموثوق" },
+    title: { en: "The Reliable Caregiver", ar: "المعتني الموثوق" },
     summary: {
       en: "You are someone people lean on completely. Organized, kind, and deeply trustworthy, you provide both practical help and emotional warmth to everyone in your life.",
       ar: "انت شخص يعتمد عليه الناس تماما. منظم ولطيف وجدير بالثقة بعمق تقدم المساعدة العملية والدفء العاطفي لكل من في حياتك.",
