@@ -1,25 +1,25 @@
 "use client";
 
 import React, { useState } from 'react';
-import { fetchDatabaseData } from './actions';
+import { fetchDatabaseData, type DbResponse } from './actions';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 export default function DatabaseCharts() {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState < any[] > ([]);
   const [error, setError] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+  
   async function handleLogin(formData: FormData) {
-    const result = await fetchDatabaseData(formData);
-    if (result.success) {
+    const result: DbResponse = await fetchDatabaseData(formData);
+    if (result.success && result.data) {
       setData(result.data);
       setIsAuthenticated(true);
       setError("");
     } else {
-      setError("Connection failed: " + result.error);
+      setError("Connection failed: " + (result.error || "Unknown error"));
     }
   }
-
+  
   const chartData = data.reduce((acc: any[], curr) => {
     const date = new Date(curr.completed_at).toLocaleDateString();
     const existing = acc.find(item => item.date === date);
@@ -30,7 +30,7 @@ export default function DatabaseCharts() {
     }
     return acc;
   }, []).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
+  
   if (!isAuthenticated) {
     return (
       <div className="p-8 max-w-md mx-auto">
@@ -44,7 +44,7 @@ export default function DatabaseCharts() {
       </div>
     );
   }
-
+  
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">Site Usage & Data</h1>
@@ -89,4 +89,3 @@ export default function DatabaseCharts() {
     </div>
   );
 }
-
