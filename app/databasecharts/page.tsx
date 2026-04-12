@@ -47,10 +47,10 @@ export default function DatabaseCharts() {
   
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Site Usage & Data</h1>
+      <h1 className="text-3xl font-bold mb-6">Full Quiz Database Dashboard</h1>
       
-      <div className="mb-10 bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Daily Responses</h2>
+      <div className="mb-10 bg-white p-6 rounded-lg shadow-md border border-gray-200">
+        <h2 className="text-xl font-semibold mb-4">Daily Usage</h2>
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData}>
@@ -58,29 +58,51 @@ export default function DatabaseCharts() {
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="count" fill="#3b82f6" />
+              <Bar dataKey="count" fill="#10b981" />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border">
+      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+        <table className="min-w-full bg-white text-xs">
           <thead>
-            <tr className="bg-gray-100">
-              <th className="p-2 border">ID</th>
-              <th className="p-2 border">Name</th>
-              <th className="p-2 border">Dominant Trait</th>
-              <th className="p-2 border">Completed At</th>
+            <tr className="bg-gray-50 border-b">
+              <th className="p-3 text-left font-semibold">Date</th>
+              <th className="p-3 text-left font-semibold">Name</th>
+              <th className="p-3 text-left font-semibold">Email</th>
+              <th className="p-3 text-left font-semibold">Age</th>
+              <th className="p-3 text-left font-semibold">Sex</th>
+              <th className="p-3 text-left font-semibold">Lang</th>
+              <th className="p-3 text-left font-semibold">Country</th>
+              <th className="p-3 text-center font-semibold bg-blue-50">O</th>
+              <th className="p-3 text-center font-semibold bg-blue-50">C</th>
+              <th className="p-3 text-center font-semibold bg-blue-50">E</th>
+              <th className="p-3 text-center font-semibold bg-blue-50">A</th>
+              <th className="p-3 text-center font-semibold bg-blue-50">N</th>
+              <th className="p-3 text-left font-semibold">Dominant</th>
             </tr>
           </thead>
           <tbody>
             {data.map((row) => (
-              <tr key={row.id} className="text-center border-b">
-                <td className="p-2 border">{row.id}</td>
-                <td className="p-2 border">{row.name}</td>
-                <td className="p-2 border font-bold text-blue-600">{row.dominant_trait}</td>
-                <td className="p-2 border">{new Date(row.completed_at).toLocaleString()}</td>
+              <tr key={row.id} className="border-b hover:bg-gray-50">
+                <td className="p-3 whitespace-nowrap">{new Date(row.completed_at).toLocaleDateString()}</td>
+                <td className="p-3 font-medium">{row.name}</td>
+                <td className="p-3 truncate max-w-[150px]">{row.email || 'N/A'}</td>
+                <td className="p-3">{row.age}</td>
+                <td className="p-3">{row.sex}</td>
+                <td className="p-3 uppercase">{row.language}</td>
+                <td className="p-3">{row.country || 'N/A'}</td>
+                <td className="p-3 text-center">{row.o_score}</td>
+                <td className="p-3 text-center">{row.c_score}</td>
+                <td className="p-3 text-center">{row.e_score}</td>
+                <td className="p-3 text-center">{row.a_score}</td>
+                <td className="p-3 text-center">{row.n_score}</td>
+                <td className="p-3">
+                  <span className="px-2 py-1 rounded bg-blue-100 text-blue-800 font-bold">
+                    {row.dominant_trait}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
