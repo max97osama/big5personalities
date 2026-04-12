@@ -5,12 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Trait } from "@/lib/questions";
 import { traitInfo } from "@/lib/traits";
-import type { PersonalityResult } from "@/lib/scoring";
-
-function getCombinedImageName(combinedKey: string): string {
-  const parts = combinedKey.split("+");
-  return `trait-${parts[0].toLowerCase()}_${parts[1].toLowerCase()}`;
-}
+import type { PersonalityResult, TraitScore } from "@/lib/scoring";
 
 const slugMap: Record<string, string> = {
   "O+C": "visionary-architect",
@@ -24,6 +19,48 @@ const slugMap: Record<string, string> = {
   "E+N": "passionate-performer",
   "A+N": "gentle-empath",
 };
+
+const traitSlugMap: Record<string, string> = {
+  O: "openness", C: "conscientiousness",
+  E: "extraversion", A: "agreeableness", N: "neuroticism",
+};
+
+function getCombinedImage(combinedKey: string, scores: TraitScore[]): string {
+  const [t1, t2] = combinedKey.split("+");
+  const s1 = scores.find(s => s.trait === t1);
+  const s2 = scores.find(s => s.trait === t2);
+  const dominant = s1 && s2 ? (s1.percent >= s2.percent ? s1 : s2) : s1;
+
+  const variantMap: Record<string, { low?: string; high?: string }> = {
+    "O+E": { low: "trait-O_Elow" },
+    "C+E": { low: "trait-C_Elow" },
+    "E+N": { low: "trait-E_Nlow" },
+    "O+A": { low: "trait-O_Alow" },
+    "A+N": { low: "trait-A_Nlow" },
+    "O+N": { high: "trait-O_Nhigh" },
+  };
+
+  const variants = variantMap[combinedKey];
+  if (variants && dominant) {
+    if (dominant.percent < 45 && variants.low) return `${variants.low}.webp`;
+    if (dominant.percent > 75 && variants.high) return `${variants.high}.webp`;
+  }
+
+  const imageMap: Record<string, string> = {
+    "O+C": "trait-O_C",
+    "O+E": "trait-O_E",
+    "O+A": "trait-O_A",
+    "O+N": "trait-O_N",
+    "C+E": "trait-C_E",
+    "C+A": "trait-A_C",
+    "C+N": "trait-C_N",
+    "E+A": "trait-A_E",
+    "E+N": "trait-A_E",
+    "A+N": "trait-A_N",
+  };
+
+  return `${imageMap[combinedKey] || "trait-o"}.webp`;
+}
 
 export default function ResultPage() {
   const router = useRouter();
@@ -65,11 +102,7 @@ export default function ResultPage() {
         }),
       });
       const data = await res.json();
-      if (data.success) {
-        setEmailStatus("sent");
-      } else {
-        setEmailStatus("error");
-      }
+      setEmailStatus(data.success ? "sent" : "error");
     } catch {
       setEmailStatus("error");
     }
@@ -83,7 +116,7 @@ export default function ResultPage() {
 
   const dominant = traitInfo[result.dominantTrait as Trait];
   const second = traitInfo[result.secondTrait as Trait];
-  const combinedImgName = getCombinedImageName(result.combinedKey);
+  const combinedImg = getCombinedImage(result.combinedKey, result.scores);
   const personalitySlug = slugMap[result.combinedKey] || "";
 
   return (
@@ -97,13 +130,13 @@ export default function ResultPage() {
           <div className="ad-space-top">Advertisement</div>
 
           <div className="card" style={{ textAlign: "center", marginBottom: 16 }}>
-            <div style={{ position: "relative", width: "100%", height: 220, borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
+            <div style={{ position: "relative", width: "100%", height: 240, borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
               <Image
-                src={`/images/${combinedImgName}.webp`}
+                src={`/images/${combinedImg}`}
                 alt={result.personalityTitle.en}
                 fill
                 style={{ objectFit: "cover" }}
-                onError={(e: any) => { e.target.style.display = "none"; }}
+                priority
               />
             </div>
             <div className="combined-badge">
@@ -125,7 +158,7 @@ export default function ResultPage() {
             </div>
             {personalitySlug && (
               <Link href={`/personalities/${personalitySlug}`}>
-                <button style={{ background: "transparent", border: `2px solid #3b9dd4`, color: "#3b9dd4", borderRadius: 10, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                <button style={{ background: "transparent", border: "2px solid #3b9dd4", color: "#3b9dd4", borderRadius: 10, padding: "8px 20px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
                   Read Full Personality Profile →
                 </button>
               </Link>
@@ -142,8 +175,7 @@ export default function ResultPage() {
                 <div key={s.trait} style={{ marginBottom: 20 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <Link href={`/traits/${["O","C","E","A","N"].includes(s.trait) ? {O:"openness",C:"conscientiousness",E:"extraversion",A:"agreeableness",N:"neuroticism"}[s.trait as Trait] : ""}`}
-                        style={{ fontWeight: 700, color: info.color, textDecoration: "none" }}>
+                      <Link href={`/traits/${traitSlugMap[s.trait]}`} style={{ fontWeight: 700, color: info.color, textDecoration: "none" }}>
                         {info.name.en}
                       </Link>
                       <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: info.color, color: "white" }}>
@@ -166,7 +198,6 @@ export default function ResultPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16, marginBottom: 16 }}>
             {[result.dominantTrait, result.secondTrait].map((t) => {
               const info = traitInfo[t as Trait];
-              const traitSlugMap: Record<string, string> = { O: "openness", C: "conscientiousness", E: "extraversion", A: "agreeableness", N: "neuroticism" };
               return (
                 <div key={t} className="trait-detail-card">
                   <div style={{ position: "relative", width: "100%", height: 180, borderRadius: 12, overflow: "hidden", marginBottom: 14 }}>
@@ -175,7 +206,6 @@ export default function ResultPage() {
                       alt={info.name.en}
                       fill
                       style={{ objectFit: "cover" }}
-                      onError={(e: any) => { e.target.style.display = "none"; }}
                     />
                   </div>
                   <Link href={`/traits/${traitSlugMap[t]}`} style={{ textDecoration: "none" }}>
@@ -227,37 +257,28 @@ export default function ResultPage() {
             ) : (
               <>
                 <p style={{ fontSize: 14, color: "#5b8db8", marginBottom: 16, lineHeight: 1.6 }}>
-                  Receive a full copy of your personality results with all trait scores delivered to your inbox.
+                  Receive a full copy of your personality results delivered to your inbox.
                 </p>
                 {(showEmailInput || !customEmail) && (
-                  <div style={{ marginBottom: 12 }}>
-                    <input
-                      className="form-input"
-                      type="email"
-                      placeholder="your@email.com"
-                      value={customEmail}
-                      onChange={(e) => setCustomEmail(e.target.value)}
-                      style={{ marginBottom: 0 }}
-                    />
-                  </div>
+                  <input className="form-input" type="email" placeholder="your@email.com"
+                    value={customEmail} onChange={(e) => setCustomEmail(e.target.value)}
+                    style={{ marginBottom: 12 }} />
                 )}
                 {customEmail && !showEmailInput && (
                   <p style={{ fontSize: 13, color: "#5b8db8", marginBottom: 12 }}>
                     Send to: <strong style={{ color: "#0d2137" }}>{customEmail}</strong>
-                    <button onClick={() => setShowEmailInput(true)} style={{ background: "none", border: "none", color: "#3b9dd4", cursor: "pointer", fontSize: 12, marginLeft: 8 }}>
+                    <button onClick={() => setShowEmailInput(true)}
+                      style={{ background: "none", border: "none", color: "#3b9dd4", cursor: "pointer", fontSize: 12, marginLeft: 8 }}>
                       Change
                     </button>
                   </p>
                 )}
                 {emailStatus === "error" && (
                   <p style={{ fontSize: 13, color: "#c0546e", marginBottom: 12 }}>
-                    Failed to send. Please check the email address and try again.
+                    Failed to send. Please check the email and try again.
                   </p>
                 )}
-                <button
-                  onClick={sendEmail}
-                  disabled={emailStatus === "sending"}
-                  className="btn-primary"
+                <button onClick={sendEmail} disabled={emailStatus === "sending"} className="btn-primary"
                   style={{ background: emailStatus === "sending" ? "#a8cfe5" : "#3b9dd4" }}>
                   {emailStatus === "sending" ? "Sending..." : "Send My Results →"}
                 </button>
@@ -266,15 +287,9 @@ export default function ResultPage() {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
-            <Link href="/info">
-              <button className="btn-primary">🔄 Retake the Quiz</button>
-            </Link>
-            <Link href="/ar/info">
-              <button className="btn-secondary">🌐 Take Quiz in Arabic — اللغة العربية</button>
-            </Link>
-            <Link href="/">
-              <button className="btn-secondary">← Back to Home</button>
-            </Link>
+            <Link href="/info"><button className="btn-primary">🔄 Retake the Quiz</button></Link>
+            <Link href="/ar/info"><button className="btn-secondary">🌐 Take Quiz in Arabic — اللغة العربية</button></Link>
+            <Link href="/"><button className="btn-secondary">← Back to Home</button></Link>
           </div>
 
           <p style={{ textAlign: "center", fontSize: 11, color: "#8ab4d4", marginBottom: 24 }}>
