@@ -21,14 +21,17 @@ const slugMap: Record<string, string> = {
 };
 
 const traitSlugMap: Record<string, string> = {
-  O: "openness", C: "conscientiousness",
-  E: "extraversion", A: "agreeableness", N: "neuroticism",
+  O: "openness",
+  C: "conscientiousness",
+  E: "extraversion",
+  A: "agreeableness",
+  N: "neuroticism",
 };
 
 function getCombinedImage(combinedKey: string, scores: TraitScore[]): string {
   const [t1, t2] = combinedKey.split("+");
-  const s1 = scores.find(s => s.trait === t1);
-  const s2 = scores.find(s => s.trait === t2);
+  const s1 = scores.find((s) => s.trait === t1);
+  const s2 = scores.find((s) => s.trait === t2);
   const dominant = s1 && s2 ? (s1.percent >= s2.percent ? s1 : s2) : s1;
 
   const variantMap: Record<string, { low?: string; high?: string }> = {
@@ -47,16 +50,16 @@ function getCombinedImage(combinedKey: string, scores: TraitScore[]): string {
   }
 
   const imageMap: Record<string, string> = {
-    "O+C": "trait-O_C",
+    "O+C": "trait-o",
     "O+E": "trait-O_E",
-    "O+A": "trait-O_A",
-    "O+N": "trait-O_N",
+    "O+A": "trait-O_Alow",
+    "O+N": "trait-O_Nhigh",
     "C+E": "trait-C_E",
     "C+A": "trait-A_C",
-    "C+N": "trait-C_N",
+    "C+N": "trait-c",
     "E+A": "trait-A_E",
-    "E+N": "trait-A_E",
-    "A+N": "trait-A_N",
+    "E+N": "trait-E_Nlow",
+    "A+N": "trait-A_Nlow",
   };
 
   return `${imageMap[combinedKey] || "trait-o"}.webp`;
@@ -123,11 +126,27 @@ export default function ArabicResultPage() {
     <main style={{ background: "linear-gradient(160deg, #deeef9 0%, #e8f4fb 50%, #f0f7fd 100%)", minHeight: "100vh", padding: "24px 0" }}>
       <div className="result-layout">
 
-        <div className="ad-space-side">Ad</div>
+        <div className="ad-space-side">
+          <ins className="adsbygoogle"
+            style={{ display: "block" }}
+            data-ad-client="ca-pub-6466150237575506"
+            data-ad-slot="9593839122"
+            data-ad-format="auto"
+            data-full-width-responsive="true" />
+          <script dangerouslySetInnerHTML={{ __html: "(adsbygoogle = window.adsbygoogle || []).push({});" }} />
+        </div>
 
         <div className="result-main">
 
-          <div className="ad-space-top">اعلان</div>
+          <div className="ad-space-top">
+            <ins className="adsbygoogle"
+              style={{ display: "block" }}
+              data-ad-client="ca-pub-6466150237575506"
+              data-ad-slot="9593839122"
+              data-ad-format="auto"
+              data-full-width-responsive="true" />
+            <script dangerouslySetInnerHTML={{ __html: "(adsbygoogle = window.adsbygoogle || []).push({});" }} />
+          </div>
 
           <div className="card" style={{ textAlign: "center", marginBottom: 16 }}>
             <div style={{ position: "relative", width: "100%", height: 240, borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
@@ -137,6 +156,7 @@ export default function ArabicResultPage() {
                 fill
                 style={{ objectFit: "cover" }}
                 priority
+                unoptimized
               />
             </div>
             <div className="combined-badge">
@@ -181,7 +201,8 @@ export default function ArabicResultPage() {
                       <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: info.color, color: "white" }}>
                         {s.levelAr}
                       </span>
-                      <Link href={`/ar/traits/${traitSlugMap[s.trait]}`} style={{ fontWeight: 700, color: info.color, textDecoration: "none" }}>
+                      <Link href={`/ar/traits/${traitSlugMap[s.trait]}`}
+                        style={{ fontWeight: 700, color: info.color, textDecoration: "none" }}>
                         → {info.name.ar}
                       </Link>
                     </div>
@@ -206,6 +227,7 @@ export default function ArabicResultPage() {
                       alt={info.name.ar}
                       fill
                       style={{ objectFit: "cover" }}
+                      unoptimized
                     />
                   </div>
                   <Link href={`/ar/traits/${traitSlugMap[t]}`} style={{ textDecoration: "none" }}>
@@ -252,7 +274,7 @@ export default function ArabicResultPage() {
               <div style={{ textAlign: "center", padding: "16px 0" }}>
                 <div style={{ fontSize: 36, marginBottom: 8 }}>✅</div>
                 <p style={{ fontSize: 15, fontWeight: 700, color: "#2a9d8f" }}>تم ارسال البريد بنجاح!</p>
-                <p style={{ fontSize: 13, color: "#5b8db8", marginTop: 4 }}>تحقق من صندوق الوارد.</p>
+                <p style={{ fontSize: 13, color: "#5b8db8", marginTop: 4 }}>تحقق من صندوق الوارد وملف الرسائل غير المرغوب فيها.</p>
               </div>
             ) : (
               <>
@@ -260,9 +282,14 @@ export default function ArabicResultPage() {
                   استلم نسخة كاملة من نتائجك في صندوق بريدك.
                 </p>
                 {(showEmailInput || !customEmail) && (
-                  <input className="form-input" type="email" placeholder="your@email.com"
-                    value={customEmail} onChange={(e) => setCustomEmail(e.target.value)}
-                    style={{ marginBottom: 12 }} />
+                  <input
+                    className="form-input"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={customEmail}
+                    onChange={(e) => setCustomEmail(e.target.value)}
+                    style={{ marginBottom: 12 }}
+                  />
                 )}
                 {customEmail && !showEmailInput && (
                   <p style={{ fontSize: 13, color: "#5b8db8", marginBottom: 12, textAlign: "right" }}>
@@ -278,7 +305,10 @@ export default function ArabicResultPage() {
                     فشل الارسال. يرجى التحقق من البريد والمحاولة مرة اخرى.
                   </p>
                 )}
-                <button onClick={sendEmail} disabled={emailStatus === "sending"} className="btn-primary"
+                <button
+                  onClick={sendEmail}
+                  disabled={emailStatus === "sending"}
+                  className="btn-primary"
                   style={{ background: emailStatus === "sending" ? "#a8cfe5" : "#3b9dd4" }}>
                   {emailStatus === "sending" ? "جاري الارسال..." : "ارسل نتائجي →"}
                 </button>
@@ -297,7 +327,15 @@ export default function ArabicResultPage() {
           </p>
         </div>
 
-        <div className="ad-space-side">Ad</div>
+        <div className="ad-space-side">
+          <ins className="adsbygoogle"
+            style={{ display: "block" }}
+            data-ad-client="ca-pub-6466150237575506"
+            data-ad-slot="9593839122"
+            data-ad-format="auto"
+            data-full-width-responsive="true" />
+          <script dangerouslySetInnerHTML={{ __html: "(adsbygoogle = window.adsbygoogle || []).push({});" }} />
+        </div>
       </div>
     </main>
   );
