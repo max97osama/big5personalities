@@ -28,6 +28,14 @@ const traitSlugMap: Record<string, string> = {
   N: "neuroticism",
 };
 
+const traitBarColors: Record<string, string> = {
+  O: "#7c5cbf",
+  C: "#1a6bbf",
+  E: "#e07b54",
+  A: "#2a9d8f",
+  N: "#c0546e",
+};
+
 function getCombinedImage(combinedKey: string, scores: TraitScore[]): string {
   const [t1, t2] = combinedKey.split("+");
   const s1 = scores.find((s) => s.trait === t1);
@@ -65,6 +73,39 @@ function getCombinedImage(combinedKey: string, scores: TraitScore[]): string {
   return `${imageMap[combinedKey] || "trait-o"}.webp`;
 }
 
+function TraitImage({ trait }: { trait: string }) {
+  const [failed, setFailed] = useState(false);
+  const src = `/images/trait-${trait.toLowerCase()}.webp`;
+  const info = traitInfo[trait as Trait];
+
+  if (failed) {
+    return (
+      <div style={{
+        width: "100%", height: 180, borderRadius: 12, marginBottom: 14,
+        background: `linear-gradient(135deg, ${info.color}22, ${info.color}44)`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <span style={{ fontSize: 48 }}>
+          {trait === "O" ? "🔮" : trait === "C" ? "🎯" : trait === "E" ? "⚡" : trait === "A" ? "🌿" : "🌊"}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: 180, borderRadius: 12, overflow: "hidden", marginBottom: 14 }}>
+      <Image
+        src={src}
+        alt={info.name.en}
+        fill
+        style={{ objectFit: "cover" }}
+        unoptimized
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+}
+
 export default function ResultPage() {
   const router = useRouter();
   const [result, setResult] = useState<PersonalityResult | null>(null);
@@ -88,8 +129,9 @@ export default function ResultPage() {
   async function sendEmail() {
     if (!result) return;
     const emailToUse = customEmail.trim();
-    if (!emailToUse || !/\S+@\S+\.\S+/.test(emailToUse)) {
+    if (!emailToUse || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailToUse)) {
       setShowEmailInput(true);
+      setEmailStatus("error");
       return;
     }
     setEmailStatus("sending");
@@ -129,8 +171,8 @@ export default function ResultPage() {
         <div className="ad-space-side">
           <ins className="adsbygoogle"
             style={{ display: "block" }}
-            data-ad-client="ca-pub-6466150237575506"
-            data-ad-slot="9593839122"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
             data-ad-format="auto"
             data-full-width-responsive="true" />
           <script dangerouslySetInnerHTML={{ __html: "(adsbygoogle = window.adsbygoogle || []).push({});" }} />
@@ -141,8 +183,8 @@ export default function ResultPage() {
           <div className="ad-space-top">
             <ins className="adsbygoogle"
               style={{ display: "block" }}
-              data-ad-client="ca-pub-6466150237575506"
-              data-ad-slot="9593839122"
+              data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+              data-ad-slot="XXXXXXXXXX"
               data-ad-format="auto"
               data-full-width-responsive="true" />
             <script dangerouslySetInnerHTML={{ __html: "(adsbygoogle = window.adsbygoogle || []).push({});" }} />
@@ -191,24 +233,25 @@ export default function ResultPage() {
             </h2>
             {result.scores.map((s) => {
               const info = traitInfo[s.trait as Trait];
+              const barColor = traitBarColors[s.trait] || info.color;
               return (
                 <div key={s.trait} style={{ marginBottom: 20 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <Link href={`/traits/${traitSlugMap[s.trait]}`}
-                        style={{ fontWeight: 700, color: info.color, textDecoration: "none" }}>
+                        style={{ fontWeight: 700, color: barColor, textDecoration: "none" }}>
                         {info.name.en}
                       </Link>
-                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: info.color, color: "white" }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: barColor, color: "white" }}>
                         {s.level}
                       </span>
                     </div>
-                    <span style={{ fontWeight: 700, fontSize: 13, color: info.color }}>
+                    <span style={{ fontWeight: 700, fontSize: 13, color: barColor }}>
                       {s.score}/50 ({s.percent}%)
                     </span>
                   </div>
                   <div className="trait-bar">
-                    <div className="trait-bar-fill" style={{ width: `${s.percent}%`, background: info.color }} />
+                    <div className="trait-bar-fill" style={{ width: `${s.percent}%`, background: barColor }} />
                   </div>
                   <p style={{ fontSize: 12, color: "#8ab4d4", marginTop: 4 }}>{info.description.en}</p>
                 </div>
@@ -221,15 +264,7 @@ export default function ResultPage() {
               const info = traitInfo[t as Trait];
               return (
                 <div key={t} className="trait-detail-card">
-                  <div style={{ position: "relative", width: "100%", height: 180, borderRadius: 12, overflow: "hidden", marginBottom: 14 }}>
-                    <Image
-                      src={`/images/trait-${t.toLowerCase()}.webp`}
-                      alt={info.name.en}
-                      fill
-                      style={{ objectFit: "cover" }}
-                      unoptimized
-                    />
-                  </div>
+                  <TraitImage trait={t} />
                   <Link href={`/traits/${traitSlugMap[t]}`} style={{ textDecoration: "none" }}>
                     <h3 style={{ fontSize: 16, fontWeight: 800, color: info.color, marginBottom: 12, cursor: "pointer" }}>
                       {info.name.en} →
@@ -281,28 +316,17 @@ export default function ResultPage() {
                 <p style={{ fontSize: 14, color: "#5b8db8", marginBottom: 16, lineHeight: 1.6 }}>
                   Receive a full copy of your personality results delivered to your inbox.
                 </p>
-                {(showEmailInput || !customEmail) && (
-                  <input
-                    className="form-input"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={customEmail}
-                    onChange={(e) => setCustomEmail(e.target.value)}
-                    style={{ marginBottom: 12 }}
-                  />
-                )}
-                {customEmail && !showEmailInput && (
-                  <p style={{ fontSize: 13, color: "#5b8db8", marginBottom: 12 }}>
-                    Send to: <strong style={{ color: "#0d2137" }}>{customEmail}</strong>
-                    <button onClick={() => setShowEmailInput(true)}
-                      style={{ background: "none", border: "none", color: "#3b9dd4", cursor: "pointer", fontSize: 12, marginLeft: 8 }}>
-                      Change
-                    </button>
-                  </p>
-                )}
+                <input
+                  className="form-input"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={customEmail}
+                  onChange={(e) => { setCustomEmail(e.target.value); setEmailStatus("idle"); }}
+                  style={{ marginBottom: 12 }}
+                />
                 {emailStatus === "error" && (
                   <p style={{ fontSize: 13, color: "#c0546e", marginBottom: 12 }}>
-                    Failed to send. Please check the email and try again.
+                    Please enter a valid email address and try again.
                   </p>
                 )}
                 <button
@@ -330,8 +354,8 @@ export default function ResultPage() {
         <div className="ad-space-side">
           <ins className="adsbygoogle"
             style={{ display: "block" }}
-            data-ad-client="ca-pub-6466150237575506"
-            data-ad-slot="9593839122"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
             data-ad-format="auto"
             data-full-width-responsive="true" />
           <script dangerouslySetInnerHTML={{ __html: "(adsbygoogle = window.adsbygoogle || []).push({});" }} />
