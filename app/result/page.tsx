@@ -21,14 +21,25 @@ const slugMap: Record<string, string> = {
 };
 
 const traitSlugMap: Record<string, string> = {
-  O: "openness", C: "conscientiousness",
-  E: "extraversion", A: "agreeableness", N: "neuroticism",
+  O: "openness",
+  C: "conscientiousness",
+  E: "extraversion",
+  A: "agreeableness",
+  N: "neuroticism",
+};
+
+const traitBarColors: Record<string, string> = {
+  O: "#7c5cbf",
+  C: "#1a6bbf",
+  E: "#e07b54",
+  A: "#2a9d8f",
+  N: "#c0546e",
 };
 
 function getCombinedImage(combinedKey: string, scores: TraitScore[]): string {
   const [t1, t2] = combinedKey.split("+");
-  const s1 = scores.find(s => s.trait === t1);
-  const s2 = scores.find(s => s.trait === t2);
+  const s1 = scores.find((s) => s.trait === t1);
+  const s2 = scores.find((s) => s.trait === t2);
   const dominant = s1 && s2 ? (s1.percent >= s2.percent ? s1 : s2) : s1;
 
   const variantMap: Record<string, { low?: string; high?: string }> = {
@@ -47,19 +58,52 @@ function getCombinedImage(combinedKey: string, scores: TraitScore[]): string {
   }
 
   const imageMap: Record<string, string> = {
-    "O+C": "trait-O_C",
+    "O+C": "trait-o",
     "O+E": "trait-O_E",
-    "O+A": "trait-O_A",
-    "O+N": "trait-O_N",
+    "O+A": "trait-O_Alow",
+    "O+N": "trait-O_Nhigh",
     "C+E": "trait-C_E",
     "C+A": "trait-A_C",
-    "C+N": "trait-C_N",
+    "C+N": "trait-c",
     "E+A": "trait-A_E",
-    "E+N": "trait-A_E",
-    "A+N": "trait-A_N",
+    "E+N": "trait-E_Nlow",
+    "A+N": "trait-A_Nlow",
   };
 
   return `${imageMap[combinedKey] || "trait-o"}.webp`;
+}
+
+function TraitImage({ trait }: { trait: string }) {
+  const [failed, setFailed] = useState(false);
+  const src = `/images/trait-${trait.toLowerCase()}.webp`;
+  const info = traitInfo[trait as Trait];
+
+  if (failed) {
+    return (
+      <div style={{
+        width: "100%", height: 180, borderRadius: 12, marginBottom: 14,
+        background: `linear-gradient(135deg, ${info.color}22, ${info.color}44)`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <span style={{ fontSize: 48 }}>
+          {trait === "O" ? "🔮" : trait === "C" ? "🎯" : trait === "E" ? "⚡" : trait === "A" ? "🌿" : "🌊"}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: 180, borderRadius: 12, overflow: "hidden", marginBottom: 14 }}>
+      <Image
+        src={src}
+        alt={info.name.en}
+        fill
+        style={{ objectFit: "cover" }}
+        unoptimized
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
 }
 
 export default function ResultPage() {
@@ -85,8 +129,9 @@ export default function ResultPage() {
   async function sendEmail() {
     if (!result) return;
     const emailToUse = customEmail.trim();
-    if (!emailToUse || !/\S+@\S+\.\S+/.test(emailToUse)) {
+    if (!emailToUse || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailToUse)) {
       setShowEmailInput(true);
+      setEmailStatus("error");
       return;
     }
     setEmailStatus("sending");
@@ -123,11 +168,27 @@ export default function ResultPage() {
     <main style={{ background: "linear-gradient(160deg, #deeef9 0%, #e8f4fb 50%, #f0f7fd 100%)", minHeight: "100vh", padding: "24px 0" }}>
       <div className="result-layout">
 
-        <div className="ad-space-side">Ad</div>
+        <div className="ad-space-side">
+          <ins className="adsbygoogle"
+            style={{ display: "block" }}
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true" />
+          <script dangerouslySetInnerHTML={{ __html: "(adsbygoogle = window.adsbygoogle || []).push({});" }} />
+        </div>
 
         <div className="result-main">
 
-          <div className="ad-space-top">Advertisement</div>
+          <div className="ad-space-top">
+            <ins className="adsbygoogle"
+              style={{ display: "block" }}
+              data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+              data-ad-slot="XXXXXXXXXX"
+              data-ad-format="auto"
+              data-full-width-responsive="true" />
+            <script dangerouslySetInnerHTML={{ __html: "(adsbygoogle = window.adsbygoogle || []).push({});" }} />
+          </div>
 
           <div className="card" style={{ textAlign: "center", marginBottom: 16 }}>
             <div style={{ position: "relative", width: "100%", height: 240, borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
@@ -137,6 +198,7 @@ export default function ResultPage() {
                 fill
                 style={{ objectFit: "cover" }}
                 priority
+                unoptimized
               />
             </div>
             <div className="combined-badge">
@@ -171,23 +233,25 @@ export default function ResultPage() {
             </h2>
             {result.scores.map((s) => {
               const info = traitInfo[s.trait as Trait];
+              const barColor = traitBarColors[s.trait] || info.color;
               return (
                 <div key={s.trait} style={{ marginBottom: 20 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <Link href={`/traits/${traitSlugMap[s.trait]}`} style={{ fontWeight: 700, color: info.color, textDecoration: "none" }}>
+                      <Link href={`/traits/${traitSlugMap[s.trait]}`}
+                        style={{ fontWeight: 700, color: barColor, textDecoration: "none" }}>
                         {info.name.en}
                       </Link>
-                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: info.color, color: "white" }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 20, background: barColor, color: "white" }}>
                         {s.level}
                       </span>
                     </div>
-                    <span style={{ fontWeight: 700, fontSize: 13, color: info.color }}>
+                    <span style={{ fontWeight: 700, fontSize: 13, color: barColor }}>
                       {s.score}/50 ({s.percent}%)
                     </span>
                   </div>
                   <div className="trait-bar">
-                    <div className="trait-bar-fill" style={{ width: `${s.percent}%`, background: info.color }} />
+                    <div className="trait-bar-fill" style={{ width: `${s.percent}%`, background: barColor }} />
                   </div>
                   <p style={{ fontSize: 12, color: "#8ab4d4", marginTop: 4 }}>{info.description.en}</p>
                 </div>
@@ -200,14 +264,7 @@ export default function ResultPage() {
               const info = traitInfo[t as Trait];
               return (
                 <div key={t} className="trait-detail-card">
-                  <div style={{ position: "relative", width: "100%", height: 180, borderRadius: 12, overflow: "hidden", marginBottom: 14 }}>
-                    <Image
-                      src={`/images/trait-${t.toLowerCase()}.webp`}
-                      alt={info.name.en}
-                      fill
-                      style={{ objectFit: "cover" }}
-                    />
-                  </div>
+                  <TraitImage trait={t} />
                   <Link href={`/traits/${traitSlugMap[t]}`} style={{ textDecoration: "none" }}>
                     <h3 style={{ fontSize: 16, fontWeight: 800, color: info.color, marginBottom: 12, cursor: "pointer" }}>
                       {info.name.en} →
@@ -252,33 +309,30 @@ export default function ResultPage() {
               <div style={{ textAlign: "center", padding: "16px 0" }}>
                 <div style={{ fontSize: 36, marginBottom: 8 }}>✅</div>
                 <p style={{ fontSize: 15, fontWeight: 700, color: "#2a9d8f" }}>Email sent successfully!</p>
-                <p style={{ fontSize: 13, color: "#5b8db8", marginTop: 4 }}>Check your inbox (and spam folder).</p>
+                <p style={{ fontSize: 13, color: "#5b8db8", marginTop: 4 }}>Check your inbox and spam folder.</p>
               </div>
             ) : (
               <>
                 <p style={{ fontSize: 14, color: "#5b8db8", marginBottom: 16, lineHeight: 1.6 }}>
                   Receive a full copy of your personality results delivered to your inbox.
                 </p>
-                {(showEmailInput || !customEmail) && (
-                  <input className="form-input" type="email" placeholder="your@email.com"
-                    value={customEmail} onChange={(e) => setCustomEmail(e.target.value)}
-                    style={{ marginBottom: 12 }} />
-                )}
-                {customEmail && !showEmailInput && (
-                  <p style={{ fontSize: 13, color: "#5b8db8", marginBottom: 12 }}>
-                    Send to: <strong style={{ color: "#0d2137" }}>{customEmail}</strong>
-                    <button onClick={() => setShowEmailInput(true)}
-                      style={{ background: "none", border: "none", color: "#3b9dd4", cursor: "pointer", fontSize: 12, marginLeft: 8 }}>
-                      Change
-                    </button>
-                  </p>
-                )}
+                <input
+                  className="form-input"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={customEmail}
+                  onChange={(e) => { setCustomEmail(e.target.value); setEmailStatus("idle"); }}
+                  style={{ marginBottom: 12 }}
+                />
                 {emailStatus === "error" && (
                   <p style={{ fontSize: 13, color: "#c0546e", marginBottom: 12 }}>
-                    Failed to send. Please check the email and try again.
+                    Please enter a valid email address and try again.
                   </p>
                 )}
-                <button onClick={sendEmail} disabled={emailStatus === "sending"} className="btn-primary"
+                <button
+                  onClick={sendEmail}
+                  disabled={emailStatus === "sending"}
+                  className="btn-primary"
                   style={{ background: emailStatus === "sending" ? "#a8cfe5" : "#3b9dd4" }}>
                   {emailStatus === "sending" ? "Sending..." : "Send My Results →"}
                 </button>
@@ -297,7 +351,15 @@ export default function ResultPage() {
           </p>
         </div>
 
-        <div className="ad-space-side">Ad</div>
+        <div className="ad-space-side">
+          <ins className="adsbygoogle"
+            style={{ display: "block" }}
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true" />
+          <script dangerouslySetInnerHTML={{ __html: "(adsbygoogle = window.adsbygoogle || []).push({});" }} />
+        </div>
       </div>
     </main>
   );
