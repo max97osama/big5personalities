@@ -17,7 +17,7 @@ export default function Home() {
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "60px 16px 48px" }}>
 
         <div style={{ textAlign: "center", marginBottom: 56 }}>
-          <div style={{ fontSize: 56, marginBottom: 16 }}>🌊</div>
+          <div style={{ fontSize: 56, marginBottom: 16 }}>🧠</div>
           <h1 style={{ fontSize: 32, fontWeight: 800, color: "#0d2137", marginBottom: 10, lineHeight: 1.2 }}>
             Big Five Personalities
           </h1>
