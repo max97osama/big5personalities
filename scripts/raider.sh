@@ -17,9 +17,9 @@ fi
 
 
 aider \
-  --model deepseek\deepseek-chat \
-  --api-key "${DEEPSEEK_API_KEY}" \
-  --dark-mode \
+  --model "deepseek/deepseek-chat" \
+ --api-key "deepseek=${DEEPSEEK_API_KEY}" \
+ --dark-mode \
   --yes-always \
   --no-auto-commits \
   --git false \
