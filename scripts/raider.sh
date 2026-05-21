@@ -28,6 +28,7 @@ aider \
   --show-release-notes false \
   --map-refresh auto \
   --read-only false \
+  --architect \
   --editor vim \
   --pretty \
   --stream \
