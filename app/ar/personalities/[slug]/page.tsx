@@ -1,9 +1,56 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
 import { personalityDetails } from "@/lib/personalityDetails";
 import { traitDetails } from "@/lib/traitDetails";
 import type { Trait } from "@/lib/traitDetails";
+
+const combinedImageMap: Record<string, string> = {
+  "O+C": "trait-o.webp",
+  "O+E": "trait-O_E.webp",
+  "O+A": "trait-O_Alow.webp",
+  "O+N": "trait-O_Nhigh.webp",
+  "C+E": "trait-C_E.webp",
+  "C+A": "trait-A_C.webp",
+  "C+N": "trait-c.webp",
+  "E+A": "trait-A_E.webp",
+  "E+N": "trait-E_Nlow.webp",
+  "A+N": "trait-A_Nlow.webp",
+};
+
+function CombinedImage({ combinedKey, icon, color }: { combinedKey: string; icon: string; color: string }) {
+  const [failed, setFailed] = useState(false);
+  const src = `/images/${combinedImageMap[combinedKey] || "trait-o.webp"}`;
+
+  if (failed) {
+    return (
+      <div style={{
+        width: "100%", maxWidth: 440, height: 260, borderRadius: 20,
+        margin: "0 auto 20px",
+        background: `linear-gradient(135deg, ${color}33, ${color}66)`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <span style={{ fontSize: 80 }}>{icon}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ position: "relative", width: "100%", maxWidth: 440, height: 260, borderRadius: 20, overflow: "hidden", margin: "0 auto 20px" }}>
+      <Image
+        src={src}
+        alt={combinedKey}
+        fill
+        style={{ objectFit: "cover" }}
+        unoptimized
+        priority
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+}
 
 export default function ArabicPersonalityPage() {
   const params = useParams();
@@ -40,7 +87,9 @@ export default function ArabicPersonalityPage() {
               رجوع →
             </button>
           </div>
-          <div style={{ fontSize: 56, marginBottom: 12 }}>{p.icon}</div>
+
+          <CombinedImage combinedKey={p.combinedKey} icon={p.icon} color={p.color} />
+
           <div style={{ fontSize: 12, fontWeight: 700, background: "rgba(255,255,255,0.25)", color: "white", padding: "4px 14px", borderRadius: 20, display: "inline-block", marginBottom: 12 }}>
             {p.combinedKey} النوع المدمج
           </div>
@@ -50,7 +99,6 @@ export default function ArabicPersonalityPage() {
       </div>
 
       <div style={{ maxWidth: 700, margin: "-24px auto 0", padding: "0 16px" }}>
-
         <div className="card" style={{ marginBottom: 16 }}>
           <p style={{ fontSize: 15, color: "#2d4a5e", lineHeight: 1.9, marginBottom: 16, textAlign: "right" }}>{p.summary.ar}</p>
           <p style={{ fontSize: 14, color: "#4a7a9b", lineHeight: 1.9, textAlign: "right" }}>{p.deepDescription.ar}</p>
