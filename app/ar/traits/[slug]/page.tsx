@@ -93,8 +93,33 @@ export default function ArabicTraitPage() {
       <div style={{ maxWidth: 700, margin: "-24px auto 0", padding: "0 16px" }}>
 
         <div className="card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 15, color: "#2d4a5e", lineHeight: 1.9, marginBottom: 16, textAlign: "right" }}>{t.summary.ar}</p>
-          <p style={{ fontSize: 14, color: "#4a7a9b", lineHeight: 1.9, textAlign: "right" }}>{t.description.ar}</p>
+          <p style={{ fontSize: 15, color: "#2d4a5e", lineHeight: 1.9, marginBottom: 16, textAlign: "right" }}>{t.description.ar}</p>
+          <p style={{ fontSize: 14, color: "#4a7a9b", lineHeight: 1.9, textAlign: "right" }}>{t.deepDescription.ar}</p>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+          <div className="card">
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 12, textAlign: "right" }}>نقاط القوة</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {t.strengths.ar.map((s, i) => (
+                <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start", flexDirection: "row-reverse" }}>
+                  <span style={{ color: t.color, fontWeight: 700, flexShrink: 0 }}>✓</span>
+                  <p style={{ fontSize: 13, color: "#2d4a5e", lineHeight: 1.5, textAlign: "right" }}>{s}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="card">
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: "#c0546e", marginBottom: 12, textAlign: "right" }}>نقاط الضعف</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {t.weaknesses.ar.map((w, i) => (
+                <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start", flexDirection: "row-reverse" }}>
+                  <span style={{ color: "#c0546e", fontWeight: 700, flexShrink: 0 }}>!</span>
+                  <p style={{ fontSize: 13, color: "#2d4a5e", lineHeight: 1.5, textAlign: "right" }}>{w}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="card" style={{ marginBottom: 16 }}>
@@ -115,15 +140,43 @@ export default function ArabicTraitPage() {
           </div>
         </div>
 
+        <div className="card" style={{ marginBottom: 16 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, color: t.color, marginBottom: 12, textAlign: "right" }}>امثلة مشهورة</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {t.famousExamples.ar.map((f, i) => (
+              <div key={i} style={{ fontSize: 14, color: "#2d4a5e", padding: "10px 14px", background: t.lightColor, borderRadius: 10, borderRight: `3px solid ${t.color}`, textAlign: "right" }}>
+                {f}
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
           <div className="card">
-            <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 12, textAlign: "right" }}>افضل الاصدقاء</h2>
-            <p style={{ fontSize: 14, color: "#2d4a5e", lineHeight: 1.7, textAlign: "right" }}>{t.friendTraits.ar}</p>
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 12, textAlign: "right" }}>في العلاقات</h2>
+            <p style={{ fontSize: 13, color: "#2d4a5e", lineHeight: 1.7, textAlign: "right" }}>{t.inRelationships.ar}</p>
           </div>
           <div className="card">
-            <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 12, textAlign: "right" }}>الشريك المثالي</h2>
-            <p style={{ fontSize: 14, color: "#2d4a5e", lineHeight: 1.7, textAlign: "right" }}>{t.partnerTrait.ar}</p>
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 12, textAlign: "right" }}>في بيئة العمل</h2>
+            <p style={{ fontSize: 13, color: "#2d4a5e", lineHeight: 1.7, textAlign: "right" }}>{t.inWorkplace.ar}</p>
           </div>
+        </div>
+
+        <div className="card" style={{ marginBottom: 16 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, color: t.color, marginBottom: 12, textAlign: "right" }}>نصائح للنمو</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {t.growthTips.ar.map((tip, i) => (
+              <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", flexDirection: "row-reverse" }}>
+                <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+                <p style={{ fontSize: 14, color: "#2d4a5e", lineHeight: 1.7, textAlign: "right" }}>{tip}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card" style={{ marginBottom: 24 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 8, textAlign: "right" }}>السمات المتوافقة</h2>
+          <p style={{ fontSize: 14, color: "#2d4a5e", lineHeight: 1.7, textAlign: "right" }}>{t.compatibleTraits.ar}</p>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

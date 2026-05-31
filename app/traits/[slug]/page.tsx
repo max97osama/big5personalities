@@ -93,8 +93,33 @@ export default function TraitPage() {
       <div style={{ maxWidth: 700, margin: "-24px auto 0", padding: "0 16px" }}>
 
         <div className="card" style={{ marginBottom: 16 }}>
-          <p style={{ fontSize: 15, color: "#2d4a5e", lineHeight: 1.8, marginBottom: 16 }}>{t.summary.en}</p>
-          <p style={{ fontSize: 14, color: "#4a7a9b", lineHeight: 1.8 }}>{t.description.en}</p>
+          <p style={{ fontSize: 15, color: "#2d4a5e", lineHeight: 1.8, marginBottom: 16 }}>{t.description.en}</p>
+          <p style={{ fontSize: 14, color: "#4a7a9b", lineHeight: 1.8 }}>{t.deepDescription.en}</p>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+          <div className="card">
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 12 }}>Strengths</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {t.strengths.en.map((s, i) => (
+                <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                  <span style={{ color: t.color, fontWeight: 700, flexShrink: 0 }}>✓</span>
+                  <p style={{ fontSize: 13, color: "#2d4a5e", lineHeight: 1.5 }}>{s}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="card">
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: "#c0546e", marginBottom: 12 }}>Weaknesses</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {t.weaknesses.en.map((w, i) => (
+                <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                  <span style={{ color: "#c0546e", fontWeight: 700, flexShrink: 0 }}>!</span>
+                  <p style={{ fontSize: 13, color: "#2d4a5e", lineHeight: 1.5 }}>{w}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="card" style={{ marginBottom: 16 }}>
@@ -115,15 +140,43 @@ export default function TraitPage() {
           </div>
         </div>
 
+        <div className="card" style={{ marginBottom: 16 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, color: t.color, marginBottom: 12 }}>Famous Examples</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {t.famousExamples.en.map((f, i) => (
+              <div key={i} style={{ fontSize: 14, color: "#2d4a5e", padding: "10px 14px", background: t.lightColor, borderRadius: 10, borderLeft: `3px solid ${t.color}` }}>
+                {f}
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
           <div className="card">
-            <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 12 }}>Best Friends</h2>
-            <p style={{ fontSize: 14, color: "#2d4a5e", lineHeight: 1.7 }}>{t.friendTraits.en}</p>
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 12 }}>In Relationships</h2>
+            <p style={{ fontSize: 13, color: "#2d4a5e", lineHeight: 1.7 }}>{t.inRelationships.en}</p>
           </div>
           <div className="card">
-            <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 12 }}>Ideal Partner</h2>
-            <p style={{ fontSize: 14, color: "#2d4a5e", lineHeight: 1.7 }}>{t.partnerTrait.en}</p>
+            <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 12 }}>In the Workplace</h2>
+            <p style={{ fontSize: 13, color: "#2d4a5e", lineHeight: 1.7 }}>{t.inWorkplace.en}</p>
           </div>
+        </div>
+
+        <div className="card" style={{ marginBottom: 16 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, color: t.color, marginBottom: 12 }}>Growth Tips</h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {t.growthTips.en.map((tip, i) => (
+              <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+                <p style={{ fontSize: 14, color: "#2d4a5e", lineHeight: 1.6 }}>{tip}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card" style={{ marginBottom: 24 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 800, color: t.color, marginBottom: 8 }}>Compatible Traits</h2>
+          <p style={{ fontSize: 14, color: "#2d4a5e", lineHeight: 1.7 }}>{t.compatibleTraits.en}</p>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
