@@ -3,7 +3,7 @@
 # Read API key
 API_KEY=$(cat /home/max/wordlist/duckdnsapi.txt | tr -d '[:space:]')
 DOMAIN="big5personalities"
-LOG="/home/max/big5personalities/duckdns-update.log"
+LOG="/home/max/big5personalities/updateduckdns.log"
 
 # Get current public IP
 CURRENT_IP=$(curl -s https://api.ipify.org)
