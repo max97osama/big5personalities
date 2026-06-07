@@ -16,9 +16,12 @@ fi
 # Update DuckDNS
 RESPONSE=$(curl -s "https://www.duckdns.org/update?domains=${DOMAIN}&token=${API_KEY}&ip=${CURRENT_IP}")
 
+
+curl -s "https://www.duckdns.org/update?domains=mentalhealthtest&token=${API_KEY}&ip=${CURRENT_IP}"
+
 # Log result
 if [ "$RESPONSE" = "OK" ]; then
-  echo "[$(date)] SUCCESS: Updated $DOMAIN to $CURRENT_IP" >> "$LOG"
+  echo "[$(date)] SUCCESS: Updated mht and  $DOMAIN to $CURRENT_IP" >> "$LOG"
 else
   echo "[$(date)] ERROR: DuckDNS response: $RESPONSE (IP: $CURRENT_IP)" >> "$LOG"
 fi
